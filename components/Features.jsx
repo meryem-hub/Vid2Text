@@ -1,4 +1,3 @@
-// components/Features.jsx
 "use client";
 
 import { Globe, Clock, Shield } from 'lucide-react';
