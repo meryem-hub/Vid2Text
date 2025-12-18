@@ -1,9 +1,12 @@
 import { Heading1 } from "lucide-react";
-
+import Header from '@/components/Header';
+import VideoComponent from '@/components/VideoComponent'
 export default function Home() {
   return (
-  <h1>
-    Home
-  </h1>
+  <div>
+    <Header />
+        <VideoComponent/> 
+  </div>
+
   );
 }

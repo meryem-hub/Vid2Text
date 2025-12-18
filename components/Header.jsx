@@ -1,8 +1,7 @@
-// components/Header.jsx
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Menu, X, Sparkles, ChevronDown } from 'lucide-react';
+import { Menu, X} from 'lucide-react';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);

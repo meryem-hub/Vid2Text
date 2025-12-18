@@ -1,6 +1,6 @@
 // app/layout.js or layout.js (Next.js 13+)
 import './globals.css';
-import Header from '@/components/Header';
+
 
 export const metadata = {
   title: 'Vid2Text - AI Video Transcription Platform',
@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="bg-[#212842] text-[#F0E7D5]">
-        <Header />
+       
         {children}
       </body>
     </html>
