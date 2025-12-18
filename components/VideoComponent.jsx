@@ -77,8 +77,7 @@ const VideoInputComponent = () => {
       });
     }, 200);
 
-    // Here you would make the actual API call
-    // await processVideo(selectedFile || videoUrl);
+    
   };
 
   const removeFile = () => {
@@ -95,29 +94,15 @@ const VideoInputComponent = () => {
     { id: 'youtube', label: 'YouTube', icon: <Youtube size={18} /> }
   ];
 
-  const supportedFormats = [
-    { name: 'MP4', icon: '🎥' },
-    { name: 'AVI', icon: '📹' },
-    { name: 'MOV', icon: '🎬' },
-    { name: 'MKV', icon: '💿' },
-    { name: 'WebM', icon: '🌐' }
-  ];
+
 
   return (
     <div className="relative min-h-[calc(100vh-100px)] flex items-center justify-center px-4 pt-24 pb-12">
-      {/* Background Glow Effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-[#3A4F8C]/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-[#F0E7D5]/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-[#F0E7D5]/5 via-[#3A4F8C]/10 to-[#F0E7D5]/5 rounded-full blur-3xl"></div>
-      </div>
-
+   
       <div className="relative w-full max-w-6xl mx-auto">
         {/* Hero Text */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#212842]/50 border border-[#F0E7D5]/10 mb-6">
          
-          </div>
           
           <h1 className="text-5xl md:text-7xl font-bold mb-6">
             <span className="bg-gradient-to-r from-[#F0E7D5] via-[#E8D9C5] to-[#B8A28C] bg-clip-text text-transparent">
@@ -312,60 +297,9 @@ const VideoInputComponent = () => {
           </div>
         </div>
 
-        {/* Features & Info Section */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-[#212842]/50 backdrop-blur-sm rounded-xl border border-[#F0E7D5]/10 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#F0E7D5]/10 to-[#3A4F8C]/10 border border-[#F0E7D5]/20 flex items-center justify-center">
-                <Globe className="w-5 h-5 text-[#F0E7D5]" />
-              </div>
-              <h3 className="text-[#F0E7D5] font-medium">3+ Languages</h3>
-            </div>
-            <p className="text-sm text-[#F0E7D5]/60">
-              Automatic language detection with support for global dialects
-            </p>
-          </div>
+ 
 
-          <div className="bg-[#212842]/50 backdrop-blur-sm rounded-xl border border-[#F0E7D5]/10 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#F0E7D5]/10 to-[#3A4F8C]/10 border border-[#F0E7D5]/20 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-[#F0E7D5]" />
-              </div>
-              <h3 className="text-[#F0E7D5] font-medium">Fast Processing</h3>
-            </div>
-            <p className="text-sm text-[#F0E7D5]/60">
-              10x faster than real-time. Get transcripts in minutes, not hours
-            </p>
-          </div>
-
-          <div className="bg-[#212842]/50 backdrop-blur-sm rounded-xl border border-[#F0E7D5]/10 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#F0E7D5]/10 to-[#3A4F8C]/10 border border-[#F0E7D5]/20 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-[#F0E7D5]" />
-              </div>
-              <h3 className="text-[#F0E7D5] font-medium">Secure & Private</h3>
-            </div>
-            <p className="text-sm text-[#F0E7D5]/60">
-              End-to-end encryption. Your videos are never stored permanently
-            </p>
-          </div>
-        </div>
-
-        {/* Supported Formats */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-[#F0E7D5]/60 mb-4">Supported Formats</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {supportedFormats.map((format) => (
-              <div
-                key={format.name}
-                className="px-4 py-2 rounded-lg bg-[#212842]/50 border border-[#F0E7D5]/10 text-[#F0E7D5]/80 hover:border-[#F0E7D5]/30 transition-all hover:scale-105"
-              >
-                <span className="mr-2">{format.icon}</span>
-                {format.name}
-              </div>
-            ))}
-          </div>
-        </div>
+   
       </div>
     </div>
   );
