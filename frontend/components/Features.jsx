@@ -6,7 +6,7 @@ const Features = () => {
   return (
     <section 
       id="features" 
-      className="min-h-screen py-20 bg-[#212842]"
+      className="min-h-screen bg-[#212842]"
     >
       <div className="container mx-auto px-6">
         {/* Section Header */}

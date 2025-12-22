@@ -23,6 +23,8 @@ const VideoInputComponent = () => {
     }
   };
 
+
+
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -55,30 +57,143 @@ const VideoInputComponent = () => {
     if (file) handleFileSelect(file);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!videoUrl.trim() && !selectedFile) return;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  if ((!videoUrl.trim() && !selectedFile) || isProcessing) return;
 
-    setIsProcessing(true);
-    setUploadProgress(0);
+  setIsProcessing(true);
+  setUploadProgress(0);
 
-    // Simulate upload progress
-    const progressInterval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          setTimeout(() => {
-            setIsProcessing(false);
-            setUploadProgress(0);
-          }, 500);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
-
+  try {
+    let response;
     
-  };
+    if (selectedFile && activeTab === 'upload') {
+      // File upload
+      console.log('📤 Uploading file:', selectedFile.name);
+      
+      const formData = new FormData();
+      formData.append('video', selectedFile);
+      
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 5;
+        });
+      }, 300);
+
+      response = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
+    } else if (videoUrl && activeTab === 'youtube') {
+      // YouTube processing
+      console.log('📺 Processing YouTube URL:', videoUrl);
+      
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 3;
+        });
+      }, 500);
+
+      response = await fetch('http://localhost:5000/api/youtube', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ url: videoUrl })
+      });
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
+    } else {
+      alert('Please select a video file or enter a YouTube URL');
+      setIsProcessing(false);
+      return;
+    }
+
+    // Parse response
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.error || 'Upload failed');
+    }
+
+    console.log('✅ Server response:', result);
+    
+    if (result.success) {
+      const videoId = result.data.videoId;
+      
+      // Show success message
+      alert(`✅ ${result.message}\n\nVideo ID: ${videoId}`);
+      
+      // Start checking status
+      if (selectedFile && activeTab === 'upload') {
+        // For file uploads, poll for transcript completion
+        checkTranscriptStatus(videoId);
+      }
+      
+    } else {
+      throw new Error(result.error || 'Unknown error');
+    }
+
+  } catch (error) {
+    console.error('❌ Upload error:', error);
+    alert(`Upload failed: ${error.message}`);
+    setIsProcessing(false);
+    setUploadProgress(0);
+  }
+};
+
+// Add this function to check transcript status
+const checkTranscriptStatus = async (videoId) => {
+  try {
+    console.log('🔄 Checking transcript status for:', videoId);
+    
+    const response = await fetch(`http://localhost:5000/api/status/${videoId}`);
+    const result = await response.json();
+    
+    if (result.status === 'completed') {
+      console.log('✅ Transcription completed!', result.result);
+      alert(`🎉 Transcription Complete!\n\nWord Count: ${result.result.wordCount}\nLanguage: ${result.result.language}\nDuration: ${result.result.duration}s`);
+      setIsProcessing(false);
+      setUploadProgress(0);
+      
+    } else if (result.status === 'processing') {
+      console.log('⏳ Still processing... progress:', result.progress + '%');
+      
+      // Continue polling every 5 seconds
+      setTimeout(() => checkTranscriptStatus(videoId), 5000);
+      
+    } else if (result.status === 'failed') {
+      alert('❌ Transcription failed. Please try again.');
+      setIsProcessing(false);
+      setUploadProgress(0);
+      
+    } else {
+      // Still pending, check again in 3 seconds
+      setTimeout(() => checkTranscriptStatus(videoId), 3000);
+    }
+    
+  } catch (error) {
+    console.error('❌ Status check error:', error);
+    setTimeout(() => checkTranscriptStatus(videoId), 5000);
+  }
+};
+
 
   const removeFile = () => {
     setSelectedFile(null);
@@ -289,7 +404,7 @@ const VideoInputComponent = () => {
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2">
-                  <Sparkles className="w-5 h-5" />
+                 
                   Generate Transcript
                 </div>
               )}

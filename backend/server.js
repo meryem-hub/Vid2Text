@@ -1,48 +1,59 @@
+require('dotenv').config();
 const express = require('express');
-const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const connectDB = require('./config/database');
 
+// Initialize Express
 const app = express();
-const PORT = 8081;
+
+// Connect to MongoDB
+connectDB();
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = './uploads';
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Setup uploads folder
-const uploadFolder = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadFolder)) fs.mkdirSync(uploadFolder);
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Multer storage config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadFolder);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
+// Routes
+app.use('/api/videos', require('./routes/videoRoutes'));
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'File too large. Maximum size is 500MB' 
+      });
+    }
+  }
+  
+  res.status(500).json({ 
+    success: false, 
+    error: 'Something went wrong!' 
+  });
 });
 
-const upload = multer({ storage });
+const PORT = process.env.PORT || 5000;
 
-// Upload endpoint
-app.post('/api/upload', upload.single('file'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  res.json({ message: 'File uploaded successfully', filename: req.file.filename });
-});
-
-// Mock process/transcript endpoint
-app.post('/api/process', (req, res) => {
-  const { filename } = req.body;
-  if (!filename) return res.status(400).json({ error: 'No filename provided' });
-
-  // For now, return a mock transcript
-  res.json({ transcript: `This is a mock transcript for file: ${filename}` });
-});
-
-// Start server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`📁 Uploads directory: ${path.join(__dirname, uploadsDir)}`);
+  console.log(`🌐 CORS enabled for: ${process.env.CLIENT_URL || 'http://localhost:3000'}`);
 });
